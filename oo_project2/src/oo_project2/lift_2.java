@@ -203,6 +203,8 @@ public class lift_2 extends lift implements _lift
 								{
 									req_q[rear++] = req.getRequest(j);
 									req.setBo(j);
+
+									door_flag=1;	//一楼的入队了的话还是0就不行了
 								}
 							}
 							//FR
@@ -215,13 +217,14 @@ public class lift_2 extends lift implements _lift
 								{
 									req_q[rear++] = req.getRequest(j);
 									req.setBo(j);
+
+									door_flag=1;	//一楼的入队了的话还是0就不行了
 								}
 							}
 
 						}
 					}
-				}
-				else    //运动情况的检测
+				} else    //运动情况的检测
 				{
 					for (int j = 0; j < req.getN_of_request(); j++)
 					{
@@ -235,6 +238,8 @@ public class lift_2 extends lift implements _lift
 								{
 									req_q[rear++] = req.getRequest(j);
 									req.setBo(j);
+
+									door_flag=1;	//一楼的入队了的话还是0就不行了
 								}
 							}
 							//FR
@@ -247,6 +252,8 @@ public class lift_2 extends lift implements _lift
 								{
 									req_q[rear++] = req.getRequest(j);
 									req.setBo(j);
+
+									door_flag=1;	//一楼的入队了的话还是0就不行了
 								}
 							}
 
@@ -334,8 +341,7 @@ public class lift_2 extends lift implements _lift
 
 						}
 					}
-				}
-				else    //运动情况的检测
+				} else    //运动情况的检测
 				{
 					for (int j = 0; j < req.getN_of_request(); j++)
 					{
@@ -379,9 +385,7 @@ public class lift_2 extends lift implements _lift
 					i--;
 				}   //开门时为静止判断，可能有同楼层入队，楼层数不能加
 			}
-		}
-
-		else if (this.dt == 0)
+		} else if (this.dt == 0)
 		{
 			for (int i = 0; i < req.getN_of_request(); i++)
 			{
@@ -404,11 +408,11 @@ public class lift_2 extends lift implements _lift
 								req.getRequest(i).getN() <= this.fl.getN() &&       //目标楼层<=当前楼层
 								req.getRequest(i).getN() >= req_q[front].getN() &&  //目标楼层>=主请求目标楼层
 								(req.getRequest(i).getDt() == this.dt ||
-										this.dt == 0)           )                   //方向相同or无方向
+										this.dt == 0))                   //方向相同or无方向
 						{
 							req_q[rear++] = req.getRequest(i);
 							req.setBo(i);
-							this.dt=req.getRequest(i).getDt();
+							this.dt = req.getRequest(i).getDt();
 						}
 					}
 
