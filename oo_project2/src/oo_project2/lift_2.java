@@ -39,6 +39,8 @@ public class lift_2 extends lift implements _lift
 
 		this.tostr = "停靠信息：";
 
+		int fl_begin = this.fl.getN();
+
 		//先检查执行中的请求队列是否为空，不为空的话从中取出主请求
 		//
 		if (front < rear)
@@ -161,7 +163,7 @@ public class lift_2 extends lift implements _lift
 		if (this.dt == 1)
 		{
 			int mov_flag = 0;
-			for (int i = this.fl.getN(); i <= req_q[front].getN(); )
+			for (int i = fl_begin; i <= req_q[front].getN(); )
 			{
 				int door_flag = 0;
 
@@ -189,42 +191,76 @@ public class lift_2 extends lift implements _lift
 				}
 
 				//检查 捎带请求入队
-				if (i == this.fl.getN() || door_flag == 1)  //静止情况的检测
+				if (i == fl_begin || door_flag == 1) //静止情况的检测
 				{
 					for (int j = 0; j < req.getN_of_request(); j++)
 					{
 						if (req.getBo(j) == true)
 						{
-							//ER
-							if (req.getRequest(j).getType() == -1)
-							{
-								if (req.getRequest(j).getT() <= this.clock &&           //时间
-										req.getRequest(j).getN() >= this.fl.getN())     //目标楼层>=当前楼层
-								{
-									req_q[rear++] = req.getRequest(j);
-									req.setBo(j);
 
-									door_flag=1;	//一楼的入队了的话还是0就不行了
+							if(i==req_q[front].getN())
+							{
+								//ER
+								if (req.getRequest(j).getType() == -1)
+								{
+									if (req.getRequest(j).getT() <= this.clock-1 &&           //时间
+											req.getRequest(j).getN() >= this.fl.getN())     //目标楼层>=当前楼层
+									{
+										req_q[rear++] = req.getRequest(j);
+										req.setBo(j);
+
+										door_flag = 1;    //一楼的入队了的话还是0就不行了
+									}
+								}
+								//FR
+								else if (req.getRequest(j).getType() == 1)
+								{
+									if (req.getRequest(j).getT() <= this.clock-1 &&               //时间
+											req.getRequest(j).getN() >= this.fl.getN() &&       //目标楼层>=当前楼层
+											req.getRequest(j).getN() <= req_q[front].getN() &&  //目标楼层<=主请求目标楼层
+											req.getRequest(j).getDt() == this.dt)               //方向相同
+									{
+										req_q[rear++] = req.getRequest(j);
+										req.setBo(j);
+
+										door_flag = 1;    //一楼的入队了的话还是0就不行了
+									}
 								}
 							}
-							//FR
-							else if (req.getRequest(j).getType() == 1)
-							{
-								if (req.getRequest(j).getT() <= this.clock &&               //时间
-										req.getRequest(j).getN() >= this.fl.getN() &&       //目标楼层>=当前楼层
-										req.getRequest(j).getN() <= req_q[front].getN() &&  //目标楼层<=主请求目标楼层
-										req.getRequest(j).getDt() == this.dt)               //方向相同
-								{
-									req_q[rear++] = req.getRequest(j);
-									req.setBo(j);
 
-									door_flag=1;	//一楼的入队了的话还是0就不行了
+							else
+							{
+								//ER
+								if (req.getRequest(j).getType() == -1)
+								{
+									if (req.getRequest(j).getT() <= this.clock &&           //时间
+											req.getRequest(j).getN() >= this.fl.getN())     //目标楼层>=当前楼层
+									{
+										req_q[rear++] = req.getRequest(j);
+										req.setBo(j);
+
+										door_flag = 1;    //一楼的入队了的话还是0就不行了
+									}
+								}
+								//FR
+								else if (req.getRequest(j).getType() == 1)
+								{
+									if (req.getRequest(j).getT() <= this.clock &&               //时间
+											req.getRequest(j).getN() >= this.fl.getN() &&       //目标楼层>=当前楼层
+											req.getRequest(j).getN() <= req_q[front].getN() &&  //目标楼层<=主请求目标楼层
+											req.getRequest(j).getDt() == this.dt)               //方向相同
+									{
+										req_q[rear++] = req.getRequest(j);
+										req.setBo(j);
+
+										door_flag = 1;    //一楼的入队了的话还是0就不行了
+									}
 								}
 							}
-
 						}
 					}
-				} else    //运动情况的检测
+				}
+				else    //运动情况的检测
 				{
 					for (int j = 0; j < req.getN_of_request(); j++)
 					{
@@ -239,7 +275,7 @@ public class lift_2 extends lift implements _lift
 									req_q[rear++] = req.getRequest(j);
 									req.setBo(j);
 
-									door_flag=1;	//一楼的入队了的话还是0就不行了
+									door_flag = 1;    //一楼的入队了的话还是0就不行了
 								}
 							}
 							//FR
@@ -253,7 +289,7 @@ public class lift_2 extends lift implements _lift
 									req_q[rear++] = req.getRequest(j);
 									req.setBo(j);
 
-									door_flag=1;	//一楼的入队了的话还是0就不行了
+									door_flag = 1;    //一楼的入队了的话还是0就不行了
 								}
 							}
 
@@ -281,7 +317,7 @@ public class lift_2 extends lift implements _lift
 		else if (this.dt == -1)
 		{
 			int mov_flag = 0;
-			for (int i = this.fl.getN(); i >= req_q[front].getN(); )
+			for (int i = fl_begin; i >= req_q[front].getN(); )
 			{
 				int door_flag = 0;
 
@@ -310,38 +346,66 @@ public class lift_2 extends lift implements _lift
 				}
 
 				//检查 捎带请求入队
-				if (i == this.fl.getN() || door_flag == 1)  //静止情况的检测
+				if (i == fl_begin || door_flag == 1)  //静止情况的检测
 				{
 					for (int j = 0; j < req.getN_of_request(); j++)
 					{
 						if (req.getBo(j) == true)
 						{
-							//ER
-							if (req.getRequest(j).getType() == -1)
+							if(req_q[front].getN()==i)
 							{
-								if (req.getRequest(j).getT() <= this.clock &&           //时间
-										req.getRequest(j).getN() <= this.fl.getN())     //目标楼层<=当前楼层
+								//ER
+								if (req.getRequest(j).getType() == -1)
 								{
-									req_q[rear++] = req.getRequest(j);
-									req.setBo(j);
+									if (req.getRequest(j).getT() <= this.clock-1 &&           //时间
+											req.getRequest(j).getN() <= this.fl.getN())     //目标楼层<=当前楼层
+									{
+										req_q[rear++] = req.getRequest(j);
+										req.setBo(j);
+									}
+								}
+								//FR
+								else if (req.getRequest(j).getType() == 1)
+								{
+									if (req.getRequest(j).getT() <= this.clock-1 &&               //时间
+											req.getRequest(j).getN() <= this.fl.getN() &&       //目标楼层<=当前楼层
+											req.getRequest(j).getN() >= req_q[front].getN() &&  //目标楼层>=主请求目标楼层
+											req.getRequest(j).getDt() == this.dt)               //方向相同
+									{
+										req_q[rear++] = req.getRequest(j);
+										req.setBo(j);
+									}
 								}
 							}
-							//FR
-							else if (req.getRequest(j).getType() == 1)
+							else
 							{
-								if (req.getRequest(j).getT() <= this.clock &&               //时间
-										req.getRequest(j).getN() <= this.fl.getN() &&       //目标楼层<=当前楼层
-										req.getRequest(j).getN() >= req_q[front].getN() &&  //目标楼层>=主请求目标楼层
-										req.getRequest(j).getDt() == this.dt)               //方向相同
+								//ER
+								if (req.getRequest(j).getType() == -1)
 								{
-									req_q[rear++] = req.getRequest(j);
-									req.setBo(j);
+									if (req.getRequest(j).getT() <= this.clock &&           //时间
+											req.getRequest(j).getN() <= this.fl.getN())     //目标楼层<=当前楼层
+									{
+										req_q[rear++] = req.getRequest(j);
+										req.setBo(j);
+									}
+								}
+								//FR
+								else if (req.getRequest(j).getType() == 1)
+								{
+									if (req.getRequest(j).getT() <= this.clock &&               //时间
+											req.getRequest(j).getN() <= this.fl.getN() &&       //目标楼层<=当前楼层
+											req.getRequest(j).getN() >= req_q[front].getN() &&  //目标楼层>=主请求目标楼层
+											req.getRequest(j).getDt() == this.dt)               //方向相同
+									{
+										req_q[rear++] = req.getRequest(j);
+										req.setBo(j);
+									}
 								}
 							}
-
 						}
 					}
-				} else    //运动情况的检测
+				}
+				else    //运动情况的检测
 				{
 					for (int j = 0; j < req.getN_of_request(); j++)
 					{
@@ -379,13 +443,14 @@ public class lift_2 extends lift implements _lift
 					if (i > req_q[front].getN())
 					{
 						clock += 0.5;
-						this.fl.setN(i + 1);
+						this.fl.setN(i - 1);
 					}
 					mov_flag = 1;
 					i--;
 				}   //开门时为静止判断，可能有同楼层入队，楼层数不能加
 			}
-		} else if (this.dt == 0)
+		}
+		else if (this.dt == 0)
 		{
 			for (int i = 0; i < req.getN_of_request(); i++)
 			{
