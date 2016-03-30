@@ -168,11 +168,14 @@ public class lift_2 extends lift implements _lift
 				int door_flag = 0;
 
 
+				int clock_flag = 0;
 				//检查 请求出队
 				for (int j = front; j < rear; j++)
 				{
 					if (exc_req_q[j] == true && req_q[j].getN() == i)  //到达则下车
 					{
+						if (req_q[j].getT() > this.clock - 1 || mov_flag == 1)
+							clock_flag = 1;
 						door_flag = 1;
 						exc_req_q[j] = false;
 					}
@@ -186,8 +189,9 @@ public class lift_2 extends lift implements _lift
 						this.tostr += ",UP,";
 						this.tostr += String.valueOf(this.clock) + ")";
 					}
-					this.clock++;
 					mov_flag = 0;
+					if (clock_flag == 1)
+						this.clock++;
 				}
 
 				//检查 捎带请求入队
@@ -198,12 +202,12 @@ public class lift_2 extends lift implements _lift
 						if (req.getBo(j) == true)
 						{
 
-							if(i==req_q[front].getN())
+							if (i == req_q[front].getN())
 							{
 								//ER
 								if (req.getRequest(j).getType() == -1)
 								{
-									if (req.getRequest(j).getT() <= this.clock-1 &&           //时间
+									if (req.getRequest(j).getT() <= this.clock - 1 &&           //时间
 											req.getRequest(j).getN() >= this.fl.getN())     //目标楼层>=当前楼层
 									{
 										req_q[rear++] = req.getRequest(j);
@@ -215,7 +219,7 @@ public class lift_2 extends lift implements _lift
 								//FR
 								else if (req.getRequest(j).getType() == 1)
 								{
-									if (req.getRequest(j).getT() <= this.clock-1 &&               //时间
+									if (req.getRequest(j).getT() <= this.clock - 1 &&               //时间
 											req.getRequest(j).getN() >= this.fl.getN() &&       //目标楼层>=当前楼层
 											req.getRequest(j).getN() <= req_q[front].getN() &&  //目标楼层<=主请求目标楼层
 											req.getRequest(j).getDt() == this.dt)               //方向相同
@@ -321,12 +325,15 @@ public class lift_2 extends lift implements _lift
 			{
 				int door_flag = 0;
 
-
+				int clock_flag = 0;
 				//检查 捎带请求出队
 				for (int j = front; j < rear; j++)
 				{
 					if (exc_req_q[j] == true && req_q[j].getN() == i)  //到达则下车
 					{
+						if (req_q[j].getT() > this.clock - 1 || mov_flag == 1)
+							clock_flag = 1;
+
 						door_flag = 1;
 						exc_req_q[j] = false;
 
@@ -341,7 +348,8 @@ public class lift_2 extends lift implements _lift
 						this.tostr += ",DOWN,";
 						this.tostr += String.valueOf(this.clock) + ")";
 					}
-					this.clock++;
+					if (clock_flag == 1)
+						this.clock++;
 					mov_flag = 0;
 				}
 
@@ -352,12 +360,12 @@ public class lift_2 extends lift implements _lift
 					{
 						if (req.getBo(j) == true)
 						{
-							if(req_q[front].getN()==i)
+							if (req_q[front].getN() == i)
 							{
 								//ER
 								if (req.getRequest(j).getType() == -1)
 								{
-									if (req.getRequest(j).getT() <= this.clock-1 &&           //时间
+									if (req.getRequest(j).getT() <= this.clock - 1 &&           //时间
 											req.getRequest(j).getN() <= this.fl.getN())     //目标楼层<=当前楼层
 									{
 										req_q[rear++] = req.getRequest(j);
@@ -367,7 +375,7 @@ public class lift_2 extends lift implements _lift
 								//FR
 								else if (req.getRequest(j).getType() == 1)
 								{
-									if (req.getRequest(j).getT() <= this.clock-1 &&               //时间
+									if (req.getRequest(j).getT() <= this.clock - 1 &&               //时间
 											req.getRequest(j).getN() <= this.fl.getN() &&       //目标楼层<=当前楼层
 											req.getRequest(j).getN() >= req_q[front].getN() &&  //目标楼层>=主请求目标楼层
 											req.getRequest(j).getDt() == this.dt)               //方向相同
@@ -460,7 +468,7 @@ public class lift_2 extends lift implements _lift
 					if (req.getRequest(i).getType() == -1)
 					{
 						if (req.getRequest(i).getT() <= this.clock &&           //时间
-								req.getRequest(i).getN() <= this.fl.getN())     //目标楼层<=当前楼层
+								req.getRequest(i).getN() == this.fl.getN())     //目标楼层<=当前楼层
 						{
 							req_q[rear++] = req.getRequest(i);
 							req.setBo(i);
